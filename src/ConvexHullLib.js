@@ -62,7 +62,9 @@ function strToPts(s) {
 
 function pointsToStr(points) {
     let pt_strs = [];
-    for (let i = 0; i < points.length-1; ++i) {
+    let end = points.length;
+    if (points[0].equals(points[points.length-1])) end -= 1;
+    for (let i = 0; i < end; ++i) {
         pt_strs.push(points[i].toString());
     }
     // separate each point with a comma
@@ -104,7 +106,10 @@ function getUpperHull(sortedUniquePtsArr) {
 
 function mergeHulls(lowerHull, upperHull) {
     // remove duplicate since they start/end on the same point
-    return [].concat(lowerHull).concat(upperHull.slice(1));
+    if (lowerHull[lowerHull.length-1].equals(upperHull[0])) {
+        return [].concat(lowerHull).concat(upperHull.slice(1));
+    }
+    return [].concat(lowerHull).concat(upperHull);
 }
 
 function getUniquePts(points) {
@@ -121,10 +126,6 @@ function getUniquePts(points) {
 
 function grahamScan(points) {
     const uniquePtsArr = getUniquePts(points);
-    // no need to calculate if 3 or less unique points
-    if (!uniquePtsArr || uniquePtsArr.length <= 3) {
-        return uniquePtsArr;
-    }
     // sort and calculate the lower/upper hulls
     let sortedUniquePtsArr = uniquePtsArr.sort(Point.sorter);
     let lowerHull = getLowerHull(sortedUniquePtsArr);
@@ -148,10 +149,6 @@ function getLeftMostPointIndex(points) {
 
 function jarvisMarch(points) {
     const uniquePtsArr = getUniquePts(points);
-    // no need to calculate if 3 or less unique points
-    if (!uniquePtsArr || uniquePtsArr.length <= 3) {
-        return uniquePtsArr;
-    }
     let hull = [];
     let leftMostPointIndex = getLeftMostPointIndex(uniquePtsArr);
     let q = 0;
